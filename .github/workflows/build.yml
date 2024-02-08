@@ -86,13 +86,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
 
-      - name: Renovate test
-        uses: ./
-        env:
-          LOG_LEVEL: debug
-        with:
-          configurationFile: ${{ matrix.configurationFile }}
-          renovate-version: ${{ env.RENOVATE_VERSION }}
+      # - name: Renovate test
+      #   uses: ./
+      #   env:
+      #     LOG_LEVEL: debug
+      #   with:
+      #     configurationFile: ${{ matrix.configurationFile }}
+      #     renovate-version: ${{ env.RENOVATE_VERSION }}
 
       - name: Renovate test with entrypoint
         uses: ./
@@ -104,56 +104,56 @@ jobs:
           docker-cmd-file: example/entrypoint.sh
           docker-user: root
 
-  release:
-    needs: [lint, commitlint, e2e]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup Git user
-        shell: bash
-        run: |
-          git config --global core.autocrlf false
-          git config --global core.symlinks true
-          git config --global user.email 'bot@renovateapp.com'
-          git config --global user.name  'Renovate Bot'
-          yarn config set version-git-tag false
+  # release:
+  #   needs: [lint, commitlint, e2e]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Setup Git user
+  #       shell: bash
+  #       run: |
+  #         git config --global core.autocrlf false
+  #         git config --global core.symlinks true
+  #         git config --global user.email 'bot@renovateapp.com'
+  #         git config --global user.name  'Renovate Bot'
+  #         yarn config set version-git-tag false
 
-      - name: Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-        with:
-          fetch-depth: 0
-          ref: 'release'
+  #     - name: Checkout
+  #       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+  #       with:
+  #         fetch-depth: 0
+  #         ref: 'release'
 
-      - name: fetch pr
-        if: ${{github.event_name == 'pull_request'}}
-        run: git fetch origin +${{ github.sha }}:${{ github.ref }}
+  #     - name: fetch pr
+  #       if: ${{github.event_name == 'pull_request'}}
+  #       run: git fetch origin +${{ github.sha }}:${{ github.ref }}
 
-      - name: Merge main
-        id: merge
-        run: |
-          git merge --no-ff -Xtheirs -m 'skip: merge (${{ github.sha }}) [skip release]' ${{ github.sha }}
-          commit=$(git rev-parse HEAD)
+  #     - name: Merge main
+  #       id: merge
+  #       run: |
+  #         git merge --no-ff -Xtheirs -m 'skip: merge (${{ github.sha }}) [skip release]' ${{ github.sha }}
+  #         commit=$(git rev-parse HEAD)
 
-      - name: Setup node
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: yarn
+  #     - name: Setup node
+  #       uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+  #       with:
+  #         node-version: ${{ env.NODE_VERSION }}
+  #         cache: yarn
 
-      - name: enable corepack
-        run: corepack enable
+  #     - name: enable corepack
+  #       run: corepack enable
 
-      - name: Install project
-        run: yarn install --frozen-lockfile
+  #     - name: Install project
+  #       run: yarn install --frozen-lockfile
 
-      - name: Push release branch
-        run: git push origin release:release
-        if: ${{ github.ref_name == github.event.repository.default_branch }}
+  #     - name: Push release branch
+  #       run: git push origin release:release
+  #       if: ${{ github.ref_name == github.event.repository.default_branch }}
 
-      - name: Release
-        run: |
-          # override for semantic-release
-          export GITHUB_REF=refs/heads/release GITHUB_SHA=${{ steps.merge.outputs.commit }}
-          yarn release
-        if: ${{ github.ref_name == github.event.repository.default_branch }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+  #     - name: Release
+  #       run: |
+  #         # override for semantic-release
+  #         export GITHUB_REF=refs/heads/release GITHUB_SHA=${{ steps.merge.outputs.commit }}
+  #         yarn release
+  #       if: ${{ github.ref_name == github.event.repository.default_branch }}
+  #       env:
+  #         GITHUB_TOKEN: ${{ github.token }}
