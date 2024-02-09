@@ -1,4 +1,4 @@
-name: Build
+name: Build2
 
 on:
   push:
@@ -12,8 +12,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.1   
       - name: Renovate test with entrypoint
-        #uses: renovatebot/github-action@v40.0.2
-        uses: lazytesting/github-action@fix-docker-entrypoint
+        uses: renovatebot/github-action@v40.0.2
         env:
           LOG_LEVEL: debug
         with:
