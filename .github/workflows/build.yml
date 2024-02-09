@@ -96,7 +96,7 @@ jobs:
       #     renovate-version: ${{ env.RENOVATE_VERSION }}
 
       - name: Renovate test with entrypoint
-        uses: ./
+        uses: renovatebot/github-action@v40.0.2
         env:
           LOG_LEVEL: debug
         with:
