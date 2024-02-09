@@ -1,0 +1,24 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1   
+      - name: Renovate test with entrypoint
+        #uses: renovatebot/github-action@v40.0.2
+        uses: lazytesting/github-action@fix-docker-entrypoint
+        env:
+          LOG_LEVEL: debug
+        with:
+          configurationFile: example/renovate-config.js
+          renovate-version: 37.175.3
+          docker-cmd-file: example/entrypoint.sh
+          docker-user: root
+          token:  ${{ secrets.RENOVATE_TOKEN }}
