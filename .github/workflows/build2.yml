@@ -18,6 +18,6 @@ jobs:
         with:
           configurationFile: example/renovate-config.js
           renovate-version: 37.175.3
-          docker-cmd-file: example/entrypoint.sh
+          docker-cmd-file: example/entrypoint2.sh
           docker-user: root
           token:  ${{ secrets.RENOVATE_TOKEN }}
